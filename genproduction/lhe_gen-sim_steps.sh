@@ -16,7 +16,7 @@ GRIDPACK_LOCATION=/afs/cern.ch/work/b/bortigno/darkphotons/genproductions/bin/Ma
 GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.v9.good.upto2j.MZd35.eps2e-2.auto-width.tar.xz
 OUTPUT_FRAGMENT=${INPUT_FRAGMENT}_${JOB_LABEL}
 
-sed -e s#GRIDPACKNAME#${GRIDPACK_NAME}/g  ${INPUT_FRAGMENT} > ${OUTPUT_FRAGMENT}
+sed -e s#GRIDPACKNAME#${GRIDPACK_NAME}#g  ${INPUT_FRAGMENT} > ${OUTPUT_FRAGMENT}
 
 #[ -s ${GRIDPACK_LOCATION}${GRIDPACK_NAME} ] || cp ${GRIDPACK_LOCATION}${GRIDPACK_NAME} . # not needed as the gridpack can be sent to the sandbox directly from the crab_cfg
 
