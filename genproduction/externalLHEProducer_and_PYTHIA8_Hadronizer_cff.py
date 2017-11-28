@@ -5,9 +5,8 @@ from Configuration.Generator.Pythia8CommonSettings_cfi import *
 from Configuration.Generator.MCTunes2017.PythiaCP5Settings_cfi import *
 
 
-current_dir = os.getcwd()
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring(current_dir + '/GRIDPACKNAME'),
+    args = cms.vstring( 'THISDIR' + '/GRIDPACKNAME'),
     nEvents = cms.untracked.uint32(5000),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),
