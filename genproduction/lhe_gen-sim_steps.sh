@@ -22,7 +22,7 @@ ZDMASS=35
 NOFJET=2
 ESPILON=2e-2
 GLOBALTAG=93X_mc2017_realistic_v3
-NEVENTS=10
+NEVENTS=10000
 
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
@@ -77,9 +77,6 @@ if [ -r ${RunningRelease}/src ] ; then
  else
      scram p CMSSW ${RunningRelease}
  fi
-
-BASE=$PWD
-NUM=100
 
 cd ${RunningRelease}/src
 eval `scram runtime -sh`
