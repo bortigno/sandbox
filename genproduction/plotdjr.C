@@ -112,8 +112,8 @@ void plotdjr(const TString & infile, const TString & outfile) {
   TChain *tree = new TChain("Events");
   tree->Add(infile); 
   
-  tree->SetAlias("GenEvent","GenEventInfoProduct_generator__SIM.obj");
-  tree->SetAlias("LHEEvent","LHEEventProduct_externalLHEProducer__SIM.obj"); 
+  tree->SetAlias("GenEvent","GenEventInfoProduct_generator__HAD.obj");
+  tree->SetAlias("LHEEvent","LHEEventProduct_externalLHEProducer__HAD.obj"); 
  
   TCut weight = "GenEvent.weight()";
   int nbins = 50.;
