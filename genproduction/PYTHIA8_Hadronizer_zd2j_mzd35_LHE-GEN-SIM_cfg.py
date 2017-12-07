@@ -30,22 +30,24 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
-process.source = cms.Source("PoolSource",
-         #fileNames = cms.untracked.vstring(['file:./unweighted_events_4.lhe']),
-         #fileNames = cms.untracked.vstring('gsiftp://gftp.t2.ucsd.edu/hadoop/cms/store/user/avartak/LHEFiles/DarkPhoton/ZdToMuMu-M12-eps0p02/unweighted_events_4.lhe'),
-         fileNames = cms.untracked.vstring([
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_10.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_2.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_5.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_6.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_7.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_8.root',
-'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_9.root',
-]),
-#         inputCommands = cms.untracked.vstring('keep *',
-#                                               'drop LHEXMLStringProduct_*_*_*'),
-#         dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
-)
+process.load('../lheInputFileList_cfi')
+
+#process.source = cms.Source("PoolSource",
+#         #fileNames = cms.untracked.vstring(['file:./unweighted_events_4.lhe']),
+#         #fileNames = cms.untracked.vstring('gsiftp://gftp.t2.ucsd.edu/hadoop/cms/store/user/avartak/LHEFiles/DarkPhoton/ZdToMuMu-M12-eps0p02/unweighted_events_4.lhe'),
+#         fileNames = cms.untracked.vstring([
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_10.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_2.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_5.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_6.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_7.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_8.root',
+#'/store/user/bortigno/mc_genproduction/darkphoton/LHE-GEN-SIM/ZD_UpTo2j_MZD35_Eps2e-2/ZD_UpTo2j_MZD35_Eps2e-2/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-GEN-SIM/171204_133542/0000/zd2j_mzd35_LHE-GEN-SIM_inLHE_9.root',
+#]),
+##         inputCommands = cms.untracked.vstring('keep *',
+##                                               'drop LHEXMLStringProduct_*_*_*'),
+##         dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
+#)
 
 process.options = cms.untracked.PSet(
 
@@ -71,7 +73,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(20971520),
-    fileName = cms.untracked.string('file:zd2j_mzd35_QCUT_13_HAD.root'),
+    fileName = cms.untracked.string('file:zd2j_mzd35_QCUT_QCUTREPLACE_HAD.root'),
     outputCommands = process.RAWSIMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -96,7 +98,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:etaJetMax = 5.', 
             'JetMatching:coneRadius = 1.', 
             'JetMatching:slowJetPower = 1', 
-            'JetMatching:qCut = 13.', 
+            'JetMatching:qCut = QCUTREPLACE.', 
             'JetMatching:nQmatch = 5', 
             'JetMatching:nJetMax = 2', 
             'JetMatching:doShowerKt = off'),
