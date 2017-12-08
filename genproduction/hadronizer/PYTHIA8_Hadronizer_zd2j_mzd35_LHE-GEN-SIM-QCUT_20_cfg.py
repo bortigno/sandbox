@@ -30,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
-process.load('../lheInputFileList_cfi')
+process.load('lheInputFileList_cfi')
 
 #process.source = cms.Source("PoolSource",
 #         #fileNames = cms.untracked.vstring(['file:./unweighted_events_4.lhe']),
