@@ -18,11 +18,11 @@ eval `scram runtime -sh`
 
 INPUT_FRAGMENT=externalLHEProducer_cff.py
 
-ZDMASS=10
+ZDMASS=50
 NOFJET=2
 ESPILON=2e-2
 GLOBALTAG=93X_mc2017_realistic_v3
-NEVENTS=100
+NEVENTS=10000
 
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
