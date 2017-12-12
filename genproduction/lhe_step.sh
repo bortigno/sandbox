@@ -60,8 +60,8 @@ CONFIG_TO_RUN=${OUTPUT_FRAGMENT/_cff/_LHE_cfg}
 
 echo "================= PB: Running cmsDriver ====================" | tee -a job.log
 
-echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${JOB_LABEL}_LHE.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads 8 --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
-cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${JOB_LABEL}_LHE.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads 8 --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
+echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:zd2j_LHE.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads 8 --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:zd2j_LHE.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads 8 --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
 
 echo "================= PB: Dumping config file ====================" | tee -a job.log
 cat ${CONFIG_TO_RUN}
