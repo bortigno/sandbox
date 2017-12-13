@@ -5,11 +5,12 @@ import datetime, time
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M')
 
-zd_mass = '35'
+zd_mass = '55'
 number_of_jets = '2'
 epsilon = '2e-2'
-custom_string_for_dataset = '_xqcut15'
+custom_string_for_dataset = ''
 step = 'LHE'
+nEvents = 10000
 
 job_label = 'ZD_UpTo'+number_of_jets+'j_MZD'+zd_mass+'_Eps'+epsilon
 config.General.requestName = st+'mc_genproduction_'+step+'_'+job_label+custom_string_for_dataset
@@ -22,10 +23,12 @@ config.JobType.psetName = 'externalLHEProducer_template_cfg.py'
 config.JobType.inputFiles = ['externalLHEProducer_cff.py','/afs/cern.ch/work/b/bortigno/darkphotons/genproductions/bin/MadGraph5_aMCatNLO/darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.'+job_label+custom_string_for_dataset+'.tar.xz']
 config.JobType.numCores = 8
 config.JobType.scriptExe = 'lhe_step.sh'
+config.JobType.scriptArgs = ['zd_mass='+zd_mass,'nEvents='+str(nEvents)]
+
 
 config.Data.outputPrimaryDataset = job_label
 config.Data.splitting = 'EventBased'
-config.Data.unitsPerJob = 10000 # the number of events here must match the number of events in the externalLHEProducer
+config.Data.unitsPerJob = nEvents # the number of events here must match the number of events in the externalLHEProducer
 NJOBS = 100
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 config.Data.outLFNDirBase = '/store/user/bortigno/mc_genproduction/darkphoton/'+step+'/'+job_label

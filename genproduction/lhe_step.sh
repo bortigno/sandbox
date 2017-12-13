@@ -18,11 +18,16 @@ eval `scram runtime -sh`
 
 INPUT_FRAGMENT=externalLHEProducer_cff.py
 
-ZDMASS=35
+echo $@
+#ZDMASS=50
+echo "param 1 = Zdmass = ${1}"
+echo "param 2 = nEvents = ${2}"
+ZDMASS="${1#*=}"
 NOFJET=2
 ESPILON=2e-2
 GLOBALTAG=93X_mc2017_realistic_v3
-NEVENTS=10000
+#NEVENTS=10000
+NEVENTS="${2#*=}"
 
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
@@ -32,7 +37,7 @@ echo $GLOBALTAG
 echo $NEVENTS
 
 
-GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}_xqcut15.tar.xz
+GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}.tar.xz
 
 echo "================= PB: Gridpack name ========================================"  | tee -a job.log
 echo $GRIDPACK_NAME
