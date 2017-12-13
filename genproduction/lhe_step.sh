@@ -18,7 +18,7 @@ eval `scram runtime -sh`
 
 INPUT_FRAGMENT=externalLHEProducer_cff.py
 
-ZDMASS=50
+ZDMASS=35
 NOFJET=2
 ESPILON=2e-2
 GLOBALTAG=93X_mc2017_realistic_v3
@@ -32,7 +32,7 @@ echo $GLOBALTAG
 echo $NEVENTS
 
 
-GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}.tar.xz
+GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}_xqcut15.tar.xz
 
 echo "================= PB: Gridpack name ========================================"  | tee -a job.log
 echo $GRIDPACK_NAME
