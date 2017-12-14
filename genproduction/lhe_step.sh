@@ -18,16 +18,15 @@ eval `scram runtime -sh`
 
 INPUT_FRAGMENT=externalLHEProducer_cff.py
 
+#Print out the list of arguments passed to the script. The first argument is always the job number. Then begin the custom arguments.
 echo $@
-#ZDMASS=50
-echo "param 1 = Zdmass = ${1}"
-echo "param 2 = nEvents = ${2}"
-ZDMASS="${1#*=}"
+echo "param 1 = Zdmass = ${2}"
+echo "param 2 = nEvents = ${3}"
+ZDMASS="${2#*=}"
 NOFJET=2
 ESPILON=2e-2
 GLOBALTAG=93X_mc2017_realistic_v3
-#NEVENTS=10000
-NEVENTS="${2#*=}"
+NEVENTS="${3#*=}"
 
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
