@@ -12,7 +12,7 @@ for root, folder, files in os.walk(starteosdir):
  if len(files) > 50 and files[0].endswith('.root') and not root.endswith('failed'):
     filename = 'mZD' + filter(str.isdigit,root[root.find('MZD'):root.find('MZD')+6])
     print(filename)
-    f = open(filename+'_filelist.txt','w')
+    f = open('lheInputFileList_'+filename+'_cfi.py','w')
     f.write("""
 import FWCore.ParameterSet.Config as cms
 
