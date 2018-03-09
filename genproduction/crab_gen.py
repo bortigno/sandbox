@@ -1,6 +1,10 @@
 from CRABClient.UserUtilities import config
 config = config()
 
+#import DAS API
+from dbs.apis.dbsClient import DbsApi
+dbs = DbsApi('https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader')
+
 import datetime, time
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M')
@@ -19,6 +23,14 @@ config.General.transferLogs = True
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'hadronizer/PYTHIA8_Hadronizer_zd2j_mzd'+zd_mass+'_LHE-GEN-SIM-QCUT_23_cfg.py'
 config.JobType.numCores = 8
+
+#using the dbs API t get the sample name
+#sample_list_dict = dbs.listDatasets(dataset = '/ZD_UpTo2j_MZD'+zd_mass+'*/bortigno*PUMoriond17*LHE*/USER')
+#samples=[]
+#for sample in sample_list_dic:
+#  samples.append(sample['dataset'])
+#print(samples)
+#config.Data.inputDataset = samples
 
 config.Data.inputDataset = '/ZD_UpTo2j_MZD125_Eps2e-2/bortigno-PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-e4a3eca9ea42f5248633ece70b42f936/USER'
 config.Data.inputDBS='phys03'
