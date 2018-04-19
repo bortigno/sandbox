@@ -15,7 +15,7 @@ eval `scram runtime -sh`
 export X509_USER_PROXY=//afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/x509up_u52020
 
 samplename="darkphoton"
-nEvents=100
+nEvents=10000
 
 [ -d Configuration/GenProduction/python/ ] || mkdir -p Configuration/GenProduction/python/
 [ -s Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py ] || cp /afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py Configuration/GenProduction/python/
@@ -45,7 +45,8 @@ cmsRun -e -j FrameworkJobReport.xml ${samplename}_RunIIFall17DRPremix_AODSIM_ste
 
 echo "================= Cleaning up step 2 output ====================" | tee -a job.log
 # cleaning
-rm -r ${samplename}_fall17_GEN-SIM-RAW_step2.root
+rm -rv ${samplename}_fall17_GEN-SIM-RAW_step2.root
 
-cp ${samplename}_fall17_GEN-SIM-RAW_step2.root /eos/cms/store/user/bortigno/mc_genproduction/darkphoton/
+# this is only for batch jobs
+mv -v ${samplename}_fall17_AODSIM_step3.root /eos/cms/store/user/bortigno/mc_genproduction/darkphoton/
 
