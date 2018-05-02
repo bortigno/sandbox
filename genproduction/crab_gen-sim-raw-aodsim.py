@@ -11,8 +11,9 @@ epsilon = '2e-2'
 custom_string_for_dataset = ''
 step = 'GEN-SIM-RAW-AODSIM'
 #total number of events is nEvents * NJOBS
-nEvents = 1000
-NJOBS = 100
+nEventsPerJob = 1000
+nJobs = 100
+totalEvents = nEventsPerJob*nJobs
 
 job_label = 'ZD_UpTo'+number_of_jets+'j_MZD'+zd_mass+'_Eps'+epsilon
 config.General.requestName = st+'mc_genproduction_'+step+'_'+job_label+custom_string_for_dataset
@@ -25,13 +26,15 @@ config.JobType.numCores = 8
 config.JobType.scriptExe = 'gen-sim-raw_aodsim_steps.sh'
 config.JobType.scriptArgs = ['zd_mass='+zd_mass]
 config.JobType.inputFiles = ['darkphoton_RunIIFall17DRPremix_AODSIM_step3_cfg.py','Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py','customiseGenSimRawAodsim.py']
+config.JobType.maxMemoryMB = 6000
+config.JobType.outputFiles = ['darkphoton_fall17_AODSIM_step3.root']
 
 config.Data.inputDataset = '/ZD_UpTo2j_MZD125_Eps2e-2/bortigno-PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-e4a3eca9ea42f5248633ece70b42f936/USER' 
 config.Data.inputDBS = 'phys03'
 #config.Data.outputPrimaryDataset = job_label
-config.Data.splitting = 'Automatic'
-config.Data.unitsPerJob = nEvents # the number of events here must match the number of events in the externalLHEProducer
-config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1 # the number of events here must match the number of events in the externalLHEProducer
+#config.Data.totalUnits = 
 config.Data.outLFNDirBase = '/store/user/bortigno/mc_genproduction/darkphoton/'+step+'/'+job_label
 config.Data.outputDatasetTag = 'PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-'+step
 config.Data.publication = True

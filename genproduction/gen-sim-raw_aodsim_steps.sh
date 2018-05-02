@@ -15,7 +15,7 @@ eval `scram runtime -sh`
 #export X509_USER_PROXY=//afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/x509up_u52020
 
 samplename="darkphoton"
-nEvents=10000
+nEvents=1000
 
 [ -d Configuration/GenProduction/python/ ] || mkdir -p Configuration/GenProduction/python/
 cp -v ../../Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py Configuration/GenProduction/python/
