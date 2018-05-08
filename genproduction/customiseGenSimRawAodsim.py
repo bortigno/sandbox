@@ -1,10 +1,16 @@
 import os,random
+import FWCore.ParameterSet.Config as cms
+
 
 def randomSeed(process):
   random.seed = os.urandom(10) #~10^14
   process.RandomNumberGeneratorService.externalLHEProducer.initialSeed = random.randint(0,999999)
   process.RandomNumberGeneratorService.generator.initialSeed = random.randint(0,999999)
   return process
+
+def noLumiCheck(process):
+  process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck") # “checkEachFile” could also work
+  return process 
 
 #this will probably not fly
 def movingFirstLumi(process):
