@@ -5,7 +5,7 @@ import datetime, time
 ts = time.time()
 st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M')
 
-d_mass = '60'
+zd_mass = '60'
 number_of_jets = '2'
 epsilon = '2e-2'
 custom_string_for_dataset = ''
