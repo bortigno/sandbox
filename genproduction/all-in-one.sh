@@ -48,6 +48,8 @@ echo "================= PB: Preparing the configs from gragments ===============
 
 JOB_LABEL=zd${NOFJET}j_mzd${ZDMASS}
 OUTPUT_FRAGMENT=${INPUT_FRAGMENT/_cff.py/}_${JOB_LABEL}_cff.py
+OUTPUT_FRAGMENT_STEP2=darkphoton_step2_cfg.py
+OUTPUT_FRAGMENT_STEP3=darkphoton_step3_cfg.py
 
 
 cd ../../
@@ -85,12 +87,12 @@ cat ${CONFIG_TO_RUN}
 
 echo "================ PB: cmsDriver preparing step2 =====================" | tee -a job.log
 # Preparing the configuration for running GEN-SIM-RAW aka step2
-cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v10 --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads 8 --datamix PreMix --era Run2_2017 --python_filename ${samplename}_RunIIFall17DRPremix_GEN-SIM-RAW_step2_cfg.py --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed  -n -1 || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v10 --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads 8 --datamix PreMix --era Run2_2017 --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename=${OUTPUT_FRAGMENT_STEP2}  -n -1 || exit $? ; 
 
 
 echo "================= PB: cmsDriver preparing step 3 ====================" | tee -a job.log
 # Preparing configuration for running RAW-RECO-AODSIM aka step3
-cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_aodsim.root --mc --eventcontent AODSIM runUnscheduled --datatier AODSIM --conditions 94X_mc2017_realistic_v10 --step RAW2DIGI,RECO,RECOSIM,EI --nThreads 8 --era Run2_2017 --python_filename ${samplename}_RunIIFall17DRPremix_AODSIM_step3_cfg.py --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring -n -1 || exit $? ; 
+cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_aodsim.root --mc --eventcontent AODSIM runUnscheduled --datatier AODSIM --conditions 94X_mc2017_realistic_v10 --step RAW2DIGI,RECO,RECOSIM,EI --nThreads 8 --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
 
 
 # ========= Now run the LHE =============
@@ -120,8 +122,8 @@ cmsRun -e -j ${samplename}_step1.log -p $CONFIG_TO_RUN
 echo "================= PB: checking outputfile ====================" | tee -a job.log
 
 echo "================= PB: CMSRUN starting Step 2 ====================" | tee -a job.log
-echo cmsRun -e -j ${samplename}_step2.log ${samplename}_RunIIFall17DRPremix_GEN-SIM-RAW_step2_cfg.py
-cmsRun -e -j ${samplename}_step2.log ${samplename}_RunIIFall17DRPremix_GEN-SIM-RAW_step2_cfg.py
+echo cmsRun -e -j ${samplename}_step2.log ${OUTPUT_FRAGMENT_STEP2}
+cmsRun -e -j ${samplename}_step2.log ${OUTPUT_FRAGMENT_STEP2}
 
 #cleaning
 rm -rfv ${samplename}_lhe.root
@@ -131,8 +133,8 @@ echo "================= PB: checking outputfile ====================" | tee -a j
 
 
 echo "================= PB: CMSRUN starting step 3 ====================" | tee -a job.log
-echo cmsRun -e -j FrameworkJobReport.xml ${samplename}_RunIIFall17DRPremix_AODSIM_step3_cfg.py
-cmsRun -e -j FrameworkJobReport.xml ${samplename}_RunIIFall17DRPremix_AODSIM_step3_cfg.py
+echo cmsRun -e -j FrameworkJobReport.xml ${OUTPUT_FRAGMENT_STEP3}
+cmsRun -e -j FrameworkJobReport.xml ${OUTPUT_FRAGMENT_STEP3}
 
 echo "================= Cleaning up step 2 output ====================" | tee -a job.log
 # cleaning
