@@ -28,8 +28,10 @@ GLOBALTAG=93X_mc2017_realistic_v3
 NEVENTS="${3#*=}"
 samplename="darkphoton"
 
-#for crab GRIDPACK_LOCATION should be PWD - and the gridpack should be copied using the crab config...
-GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
+#for crab GRIDPACK_LOCATION should be PWD - and the gridpack should be copied in the sandbox.tar.gz using the crab config...
+GRIDPACK_LOCATION=$PWD
+# for local testing the full path should be given
+#GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
 
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
@@ -118,8 +120,9 @@ echo cmsRun -e -j ${samplename}_step1.log -p $CONFIG_TO_RUN jobNum=$1
 cmsRun -e -j ${samplename}_step1.log -p $CONFIG_TO_RUN 
 # jobNum=$1
 
-[ -s ${samplename}_lhe.root ] || exit $?
 echo "================= PB: checking outputfile ====================" | tee -a job.log
+[ -s ${samplename}_lhe.root ] || echo "==================== ERROR: LHE output file not present ======================" 
+[ -s ${samplename}_lhe.root ] || exit $?
 
 echo "================= PB: CMSRUN starting Step 2 ====================" | tee -a job.log
 echo cmsRun -e -j ${samplename}_step2.log ${OUTPUT_FRAGMENT_STEP2}
@@ -129,6 +132,7 @@ cmsRun -e -j ${samplename}_step2.log ${OUTPUT_FRAGMENT_STEP2}
 rm -rfv ${samplename}_lhe.root
 
 echo "================= PB: checking outputfile ====================" | tee -a job.log
+[ -s ${samplename}_gen-sim-raw.root ] || echo "================= ERROR: GEN--SIM-RAW output file not present =====================" 
 [ -s ${samplename}_gen-sim-raw.root ] || exit $?
 
 
