@@ -4,6 +4,8 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 ConfigRelease=CMSSW_9_4_6
 RunningRelease=${ConfigRelease}
 
+SANDBOXDIR=${PWD}
+
 echo "================= PB: Starting cmssw environment prepration ====================" | tee -a job.log
 
 export SCRAM_ARCH=slc6_amd64_gcc630
@@ -28,11 +30,6 @@ GLOBALTAG=93X_mc2017_realistic_v3
 NEVENTS="${3#*=}"
 samplename="darkphoton"
 
-#for crab GRIDPACK_LOCATION should be PWD - and the gridpack should be copied in the sandbox.tar.gz using the crab config...
-GRIDPACK_LOCATION=$PWD
-# for local testing the full path should be given
-#GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
-
 echo "================= PB: Input Paramateres ========================================"  | tee -a job.log
 echo $ZDMASS
 echo $NOFJET
@@ -40,6 +37,12 @@ echo $ESPILON
 echo $GLOBALTAG
 echo $NEVENTS
 echo $samplename
+
+
+#for crab GRIDPACK_LOCATION should be in the sandbox directoruy - and the gridpack should be copied in the sandbox.tar.gz using the crab config...
+GRIDPACK_LOCATION=${SANDBOXDIR}
+# for local testing the full path should be given
+#GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
 
 GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}.tar.xz
 
@@ -54,7 +57,7 @@ OUTPUT_FRAGMENT_STEP2=darkphoton_step2_cfg.py
 OUTPUT_FRAGMENT_STEP3=darkphoton_step3_cfg.py
 
 
-cd ../../
+cd ${SANDBOXDIR}
 sed -e s#GRIDPACKNAME#${GRIDPACK_NAME}#g  ${INPUT_FRAGMENT} > ${ConfigRelease}/src/${OUTPUT_FRAGMENT}
 sed -i s#THISDIR#${GRIDPACK_LOCATION}#g ${ConfigRelease}/src/${OUTPUT_FRAGMENT}
 cd -
