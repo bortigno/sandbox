@@ -58,7 +58,7 @@ config.JobType.scriptExe = 'gen-sim-raw_aodsim_steps.sh'
 config.JobType.scriptArgs = ['zd_mass='+zd_mass]
 config.JobType.inputFiles = ['darkphoton_RunIIFall17DRPremix_AODSIM_step3_cfg.py','Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py','customiseGenSimRawAodsim.py']
 config.JobType.maxMemoryMB = 6000
-config.JobType.outputFiles = ['darkphoton_fall17_AODSIM_step3.root']
+config.JobType.outputFiles = ['darkphoton_step3.root']
 
 #config.Data.inputDataset = '/ZD_UpTo2j_MZD125_Eps2e-2/bortigno-PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3-LHE-e4a3eca9ea42f5248633ece70b42f936/USER' 
 config.Data.inputDataset = sampleDic[zd_mass]
