@@ -18,8 +18,8 @@ config.General.transferOutputs = True
 config.General.transferLogs = False
 
 config.JobType.pluginName = 'PrivateMC'
-config.JobType.psetName = 'darkphoton_step3_cfg.py'
-config.JobType.inputFiles = ['externalLHEProducer_cff.py','Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py','darkphoton_step2_cfg.py','darkphoton_step3_cfg.py','customiseGenSimRawAodsim.py','/afs/cern.ch/work/b/bortigno/darkphotons/genproductions/bin/MadGraph5_aMCatNLO/darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.'+job_label+custom_string_for_dataset+'.tar.xz']
+config.JobType.psetName = 'pset_cfg.py'
+config.JobType.inputFiles = ['pset_cfg.py','externalLHEProducer_cff.py','Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py','darkphoton_step2_cfg.py','darkphoton_step3_cfg.py','customiseGenSimRawAodsim.py','/afs/cern.ch/work/b/bortigno/darkphotons/genproductions/bin/MadGraph5_aMCatNLO/darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.'+job_label+custom_string_for_dataset+'.tar.xz']
 config.JobType.numCores = 8
 config.JobType.scriptExe = 'all-in-one.sh'
 config.JobType.scriptArgs = ['zd_mass='+zd_mass,'nEvents='+str(nEvents)]
