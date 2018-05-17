@@ -74,12 +74,6 @@ process.options.numberOfStreams=cms.untracked.uint32(0)
 
 # customisation of the process.
 
-# Automatic addition of the customisation function from Configuration.GenProduction.customiseGenSimRawAodsim
-from Configuration.GenProduction.customiseGenSimRawAodsim import noLumiCheck 
-
-#call to customisation function noLumiCheck imported from Configuration.GenProduction.customiseGenSimRawAodsim
-#process = noLumiCheck(process)
-
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils
 from Configuration.DataProcessing.Utils import addMonitoring 
 

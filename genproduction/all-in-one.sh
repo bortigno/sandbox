@@ -1,7 +1,7 @@
 #!/bin/bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
-ConfigRelease=CMSSW_9_4_6
+ConfigRelease=CMSSW_9_4_0_patch1
 RunningRelease=${ConfigRelease}
 
 SANDBOXDIR=${PWD}
@@ -92,12 +92,12 @@ cat ${CONFIG_TO_RUN}
 
 echo "================ PB: cmsDriver preparing step2 =====================" | tee -a job.log
 # Preparing the configuration for running GEN-SIM-RAW aka step2
-cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v10 --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads 8 --datamix PreMix --era Run2_2017 --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename=${OUTPUT_FRAGMENT_STEP2}  -n -1 || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v11 --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads 8 --datamix PreMix --era Run2_2017 --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename=${OUTPUT_FRAGMENT_STEP2}  -n -1 || exit $? ; 
 
 
 echo "================= PB: cmsDriver preparing step 3 ====================" | tee -a job.log
 # Preparing configuration for running RAW-RECO-AODSIM aka step3
-cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_aodsim.root --mc --eventcontent AODSIM runUnscheduled --datatier AODSIM --conditions 94X_mc2017_realistic_v10 --step RAW2DIGI,RECO,RECOSIM,EI --nThreads 8 --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
+cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_aodsim.root --mc --eventcontent AODSIM runUnscheduled --datatier AODSIM --conditions 94X_mc2017_realistic_v11 --step RAW2DIGI,RECO,RECOSIM,EI --nThreads 8 --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
 
 
 # ========= Now run the LHE =============
