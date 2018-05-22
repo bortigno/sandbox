@@ -97,8 +97,8 @@ cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_
 
 
 echo "================= PB: cmsDriver preparing step 3 ====================" | tee -a job.log
-# Preparing configuration for running RAW-RECO-AODSIM aka step3
-cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_aodsim.root --mc --eventcontent AODSIM runUnscheduled --datatier AODSIM --conditions 94X_mc2017_realistic_v11 --step RAW2DIGI,RECO,RECOSIM,EI --nThreads ${NCORES} --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
+# Preparing configuration for running RAW-RECO-AODSIM-MINIAODSIM aka step3
+cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_miniaodsim.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODAODSIM --conditions 94X_mc2017_realistic_v11 --step RAW2DIGI,RECO,RECOSIM,EI,PAT --nThreads ${NCORES} --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
 
 
 # ========= Now run the LHE =============

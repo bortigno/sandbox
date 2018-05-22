@@ -10,7 +10,7 @@ number_of_jets = '2'
 epsilon = '2e-2'
 custom_string_for_dataset = ''
 version_of_production = '_t0' # t=test. v=production.
-step = 'LHE-AODSIM'
+step = 'LHE-MINIAODSIM'
 nEvents = 250
 
 job_label = 'ZD_UpTo'+number_of_jets+'j_MZD'+zd_mass+'_Eps'+epsilon

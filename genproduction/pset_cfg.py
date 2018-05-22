@@ -45,7 +45,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(31457280),
-    fileName = cms.untracked.string('file:darkphoton_aodsim.root'),
+    fileName = cms.untracked.string('file:darkphoton_miniaodsim.root'),
     outputCommands = process.AODSIMEventContent.outputCommands
 )
 
