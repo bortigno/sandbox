@@ -30,7 +30,7 @@ config.JobType.scriptArgs = ['zd_mass='+zd_mass,'nEvents='+str(nEvents)]
 config.Data.outputPrimaryDataset = job_label
 config.Data.splitting = 'EventBased'
 config.Data.unitsPerJob = nEvents # the number of events here must match the number of events in the externalLHEProducer
-NJOBS = 5
+NJOBS = 800
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 config.Data.outLFNDirBase = '/store/user/bortigno/mc_genproduction/darkphoton/'+step+'/'+job_label+version_of_production
 config.Data.outputDatasetTag = 'RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v11'+step
