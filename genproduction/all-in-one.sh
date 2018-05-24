@@ -1,7 +1,7 @@
 #!/bin/bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
-ConfigRelease=CMSSW_9_4_0_patch1
+ConfigRelease=CMSSW_9_4_6_patch1
 RunningRelease=${ConfigRelease}
 
 SANDBOXDIR=${PWD}
@@ -26,7 +26,9 @@ echo "param 2 = nEvents = ${3}"
 ZDMASS="${2#*=}"
 NOFJET=2
 ESPILON=2e-2
-GLOBALTAG=93X_mc2017_realistic_v3
+GLOBALTAG_LHE=93X_mc2017_realistic_v3
+GLOBALTAG_GENSIM=94X_mc2017_realistic_v10
+GLOBALTAG_MINIAODSIM=94X_mc2017_realistic_v14
 NEVENTS="${3#*=}"
 samplename="darkphoton"
 NCORES=1
@@ -84,8 +86,8 @@ CONFIG_TO_RUN=${OUTPUT_FRAGMENT/_cff/_LHE_cfg}
 
 echo "================= PB: Running cmsDriver ====================" | tee -a job.log
 # Preparing the configuration for running LHE aka step1
-echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
-cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
+echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG_LHE}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG_LHE}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
 
 echo "================= PB: Dumping step1 config file ====================" | tee -a job.log
 cat ${CONFIG_TO_RUN}
@@ -93,12 +95,12 @@ cat ${CONFIG_TO_RUN}
 
 echo "================ PB: cmsDriver preparing step2 =====================" | tee -a job.log
 # Preparing the configuration for running GEN-SIM-RAW aka step2
-cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v11 --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads ${NCORES} --datamix PreMix --era Run2_2017 --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename=${OUTPUT_FRAGMENT_STEP2}  -n -1 || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/Hadronizer_TuneCP5_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein "file:${samplename}_lhe.root" --fileout file:${samplename}_gen-sim-raw.root  --pileup_input "das:/Neutrino_E-10_gun/RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v9-v1/GEN-SIM-DIGI-RAW site=T2_CH_CERN" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions ${GLOBALTAG_GENSIM} --step GEN,SIM,DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --nThreads ${NCORES} --datamix PreMix --era Run2_2017 --no_exec  --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename=${OUTPUT_FRAGMENT_STEP2}  -n -1 || exit $? ; 
 
 
 echo "================= PB: cmsDriver preparing step 3 ====================" | tee -a job.log
 # Preparing configuration for running RAW-RECO-AODSIM-MINIAODSIM aka step3
-cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_miniaodsim.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODAODSIM --conditions 94X_mc2017_realistic_v11 --step RAW2DIGI,RECO,RECOSIM,EI,PAT --nThreads ${NCORES} --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
+cmsDriver.py step3 --filein file:${samplename}_gen-sim-raw.root --fileout file:${samplename}_miniaodsim.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODAODSIM --conditions ${GLOBALTAG_MINIAODSIM} --step RAW2DIGI,RECO,RECOSIM,EI,PAT --nThreads ${NCORES} --era Run2_2017 --no_exec --customise=Configuration/GenProduction/customiseGenSimRawAodsim.noLumiCheck --customise=Configuration/DataProcessing/Utils.addMonitoring --python_filename=${OUTPUT_FRAGMENT_STEP3} -n -1 || exit $? ; 
 
 
 # ========= Now run the LHE =============
