@@ -3,6 +3,7 @@
 import os, pickle, sys, ROOT, logging
 ROOT.gROOT.SetBatch(True)
 from optparse import OptionParser
+# FIXME: this will not work unless it is in heppynmore python directory.
 from myutils import copytree
 
 argv = sys.argv
