@@ -41,9 +41,9 @@ echo $samplename
 echo $NCORES
 
 #for crab GRIDPACK_LOCATION should be in the sandbox directoruy - and the gridpack should be copied in the sandbox.tar.gz using the crab config...
-GRIDPACK_LOCATION=${SANDBOXDIR}
+#GRIDPACK_LOCATION=${SANDBOXDIR}
 # for local testing the full path should be given
-#GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
+GRIDPACK_LOCATION=/afs/cern.ch/user/b/bortigno/workspace/sandbox/genproduction/
 
 GRIDPACK_NAME=darkphoton_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz.ZD_UpTo2j_MZD${ZDMASS}_Eps${ESPILON}.tar.xz
 
@@ -84,8 +84,8 @@ CONFIG_TO_RUN=${OUTPUT_FRAGMENT/_cff/_LHE_cfg}
 
 echo "================= PB: Running cmsDriver ====================" | tee -a job.log
 # Preparing the configuration for running LHE aka step1
-echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
-cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
+echo cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename ${CONFIG_TO_RUN} --no_exec  -n ${NEVENTS} || exit $? ; 
+cmsDriver.py Configuration/GenProduction/python/ThirteenTeV/LHE/${OUTPUT_FRAGMENT} --fileout file:${samplename}_lhe.root --mc --eventcontent LHE --datatier LHE --conditions ${GLOBALTAG}  --beamspot Realistic25ns13TeVEarly2017Collision --step LHE --nThreads ${NCORES} --geometry DB:Extended --era Run2_2017 --customise=Configuration/GenProduction/customiseGenSimRawAodsim.randomSeed --python_filename ${CONFIG_TO_RUN} --no_exec -n ${NEVENTS} || exit $? ; 
 
 echo "================= PB: Dumping step1 config file ====================" | tee -a job.log
 cat ${CONFIG_TO_RUN}
