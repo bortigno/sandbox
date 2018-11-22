@@ -9,7 +9,7 @@ zd_mass = '60'
 number_of_jets = '2'
 epsilon = '2e-2'
 custom_string_for_dataset = ''
-version_of_production = '_t0' # t=test. v=production.
+version_of_production = '_v1' # t=test. v=production.
 step = 'LHE-MINIAODSIM'
 nEvents = 250
 
@@ -33,7 +33,7 @@ config.Data.unitsPerJob = nEvents # the number of events here must match the num
 NJOBS = 800
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 config.Data.outLFNDirBase = '/store/user/bortigno/mc_genproduction/darkphoton/'+step+'/'+job_label+version_of_production
-config.Data.outputDatasetTag = 'RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v11'+step
+config.Data.outputDatasetTag = 'RunIISummer17PrePremix-MC_v2_94X_mc2017_realistic_v14'+step
 config.Data.publication = True
 config.Data.publishDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter/'
 
