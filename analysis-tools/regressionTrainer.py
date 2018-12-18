@@ -80,13 +80,18 @@ class RegressionTrainer():
             mycut = ROOT.TCut(self.__cut)
             print(signal.GetEntries())
             print(signal.GetEntries(self.__cut))
-            signal.Scan("muons.pt")
         self.__apply = []
         p = re.compile(r'muons.pt\w+')
         for var in self.__vars:
             loader.AddVariable(var,'D') # add the variables
             self.__apply.append(p.sub(r'\g<0>[0]', var))
             print (self.__apply)
+
+        for spectator_var in self.__spectator_vars:
+            loader.AddSpectator(spectator_var,'D') # add the spectator variables
+            self.__apply.append(p.sub(r'\g<0>[0]', spectator_var))
+            print (self.__apply)
+
 
         loader.AddTarget( self.__target )
         mycut = ROOT.TCut( self.__cut )
