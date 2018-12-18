@@ -86,6 +86,22 @@ namespace inlinetools {
 
   }
 
+  double Hmass_comb_3(double hObj1_eta,double hObj1_phi,double hObj1_pt, double hObj1_mass,
+		      double hObj2_eta,double hObj2_phi,double hObj2_pt, double hObj2_mass,
+		      double hObj3_eta,double hObj3_phi,double hObj3_pt, double hObj3_mass){
+
+    TLorentzVector H1, H2, H3, H;
+    H1.SetPtEtaPhiM(hObj1_pt,hObj1_eta,hObj1_phi, hObj1_mass);
+    H2.SetPtEtaPhiM(hObj2_pt,hObj2_eta,hObj2_phi, hObj2_mass);
+    H3.SetPtEtaPhiM(hObj3_pt,hObj3_eta,hObj3_phi, hObj3_mass);
+   
+    H = H1+H2+H3;
+
+    return (H).M();
+
+  }
+
+
   double Hmass_3j(double h_eta,double h_phi,double h_pt, double h_mass,
 		  double aJet_eta,double aJet_phi,double aJet_pt, double aJet_mass){
 
