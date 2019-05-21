@@ -25,16 +25,21 @@ def main():
   for samp in sample_list:
     outputDataSets = ''
     #print('Checking {1}'.format(samp.DAS))
-    outputDataSets = api.listDatasets(dataset=samp.DAS)
+    outputDataSets = api.listDatasets(dataset=samp.DAS, dataset_access_type='VALID')
     if not outputDataSets :
-      print('{0} does not correspond to any DAS sample.'.format(samp.DAS))
+      print('{0} does not correspond to any VALID DAS sample.'.format(samp.DAS))
+      prodOutputDataset = api.listDatasets(dataset=samp.DAS, dataset_access_type='PRODUCTION')
+      if (prodOutputDataset):
+        print('Dataset {0} is in PRODUCTION state.'.format(prodOutputDataset))
+        continue
       print('Possible alternatives: ')
       altsampDAS = samp.DAS
       altsampDAS = re.sub(r'v[0-9]*','v*', samp.DAS)
       altsampDAS = re.sub(r'13TeV[a-zA-Z0-9_-]*/','*/', altsampDAS)
       altsampDAS = re.sub(r'4F_TuneCP5_','*',altsampDAS)
+      altsampDAS = re.sub(r'_PSweights_','*',altsampDAS)
       print(altsampDAS)
-      matchedAltSamples = api.listDatasets(dataset=altsampDAS)
+      matchedAltSamples = api.listDatasets(dataset=altsampDAS, dataset_access_type='*')
       print(matchedAltSamples)
 #    for dataset in outputDataSets:
 #        inp=dataset['dataset']
