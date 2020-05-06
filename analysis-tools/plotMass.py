@@ -8,6 +8,8 @@ parser.add_argument("-s", "--samples", nargs='*', dest="samps", default  = [],
                  help = "List of samples")
 parser.add_argument("-c","--cut-list",nargs='*',dest="cuts", default = [],
                  help = "List of cuts strings to process")
+parser.add_argument("-v","--variable-selection",nargs='*',dest="variables_selection", default = [],
+                 help = "List of variables to process")
 args = parser.parse_args()
 
 
@@ -25,6 +27,7 @@ def create_th1(name,title,nbins,minbin,maxbin,linecolor,xaxistitle="",yaxistitle
   h.SetLineColor(linecolor)
   h.GetXaxis().SetTitle(xaxistitle)
   h.GetYaxis().SetTitle(yaxistitle)
+  h.GetYaxis().SetTitleOffset(1.5)
   return h
 
 
@@ -40,15 +43,29 @@ def find_fwhm(f):
 ## some dictionaries ##
 #######################
 
-file_names = { 
+file_names = {
+        #2016
         "ggh16":"h2mu_ggH_125_prod-v16.0.7_hadded",
         "vbf16":"h2mu_vbf_125_prod-v16.0.7_hadded",
         "whp16":"h2mu_WplusH_125_prod-v16.0.7_hadded",
         "whm16":"h2mu_WminusH_125_prod-v16.0.7_hadded",
-        "tth16":"h2mu_ttH_125_prod-v16.0.7_hadded"
+        "tth16":"h2mu_ttH_125_prod-v16.0.7_hadded",
+        #2017
+        "ggh17":"h2mu_ggh_125_prod-v17.3.0_hadded",
+        #2018
+        "ggh18":"h2mu_ggh_125_prod-v18.1.2_hadded",
+        "vbf18":"h2mu_vbf_125_prod-v18.1.2_hadded",
+        "whp18":"h2mu_WplusH_125_prod-v18.1.2_hadded",
+        "whm18":"h2mu_WminusH_125_prod-v18.1.2_hadded",
+        "tth18":"h2mu_tth_125_prod-v18.1.2_hadded"
         }
 
 cutstrings = {
+  "inclusive_d0cat_PF":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
+  "inclusive_d0cat_PF_Roch":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
+  "inclusive_d0cat_kinfit":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
+  "inclusive_d0cat_kinfit_Roch":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
+  "inclusive_d0cat_Kalman":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
   "XE":"(abs(muons[muPairs.iMu1].eta) > 1.2 | abs(muons[muPairs.iMu2].eta) > 1.2)",
   "BB":"(abs(muons[muPairs.iMu1].eta) < 0.9 & abs(muons[muPairs.iMu2].eta) < 0.9)",
   "inclusive":"(abs(muons[muPairs.iMu1].eta) < 2.5 & abs(muons[muPairs.iMu2].eta) < 2.5)",
@@ -58,12 +75,30 @@ cutstrings = {
   "atLeastOneCentralJetAt40GeV":"( Sum$(jets.pt>40 && abs(jets.eta)<2.4) > 0 )"
         }
 
+variables_dictionary = {
+  "hmass_PF":["muPairs.mass","m(#mu#mu) PF"],
+  "hmass_PF_Roch":["muPairs.mass_Roch","m(#mu#mu) Roch"],
+  "hmass_kinfit":["(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)","m(#mu#mu) kinfit"],
+  "hmass_kinfit_Roch":["(muPairs.mass_kinfit>0?(muPairs.mass_kinfit*muPairs.mass_Roch/muPairs.mass):muPairs.mass_Roch)","m(#mu#mu) kinfit + Roch"],
+  "hmass_kalman":["muPairs.mass_KaMu","m(#mu#mu) kalman"]
+  }
+
+
+#class variable:
+#    def __init__(self,name,bin,min,max,title,cut,color):
+#      name: "",
+#      title: "",
+#      cut: "",
+#      color: 
+#      "mass_kinfit":"muPairs.mass_kinfit",
+#        "pt_res": ... 
+#
 
 ##########
 ## main ##
 ##########
 
-def main(sample,cut):
+def main(sample,variables_selection,cut):
 
   '''
   Functions taking sample and cut and producing dimuon mass and muon resolution 
@@ -82,12 +117,16 @@ def main(sample,cut):
   
   tree = infile.Get("dimuons/tree")
   sample_type = sample
-  
+
+  ROOT.gStyle.SetFillStyle(4000) # transparent pads
   canvas = ROOT.TCanvas("c","cmass",600,600)
   resolution_canvas = ROOT.TCanvas("res_c","res_c",600,600)
   
-  hmass_pf = create_th1("hmass_pf","MuPair mass",50, 120, 130,ROOT.kBlue,"m(#mu,#mu)")
-  hmass_kinfit = create_th1("hmass_kinfit","MuPair mass",50, 120, 130,ROOT.kRed,"m(#mu,#mu)")
+#  hmass_pf = create_th1("hmass_pf","MuPair mass", 100, 120, 130,ROOT.kBlue,"m(#mu,#mu)")
+#  hmass_kinfit = create_th1("hmass_kinfit","MuPair mass",50, 120, 130,ROOT.kRed,"m(#mu,#mu)")
+ 
+  hmass_pf = create_th1("hmass_blue","MuPair mass", 50, 120, 130,ROOT.kBlue,variables_dictionary[variables_selection][1])
+  hmass_kinfit = create_th1("hmass_red","MuPair mass",50, 120, 130,ROOT.kRed,variables_dictionary[variables_selection][1])
   
   hres_pf = create_th1("hres_pf","Muon resolution", 100,-0.2,0.2,ROOT.kBlue,"#Delta(p_{T},p_{T}^{GEN})/p_{T}^{GEN}")
   hres_kinfit = create_th1("hres_kinfit","Muon resolution", 100,-0.2,0.2,ROOT.kRed,"#Delta(p_{T},p_{T}^{GEN})/p_{T}^{GEN}")
@@ -103,7 +142,8 @@ def main(sample,cut):
   cutstring=cutstrings[post_string]
   
   resolution_canvas.cd()
-  tree.Draw("( (muons.pt_kinfit>0?muons.pt_kinfit:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_kinfit","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
+  var="( (muons.pt_kinfit>0?muons.pt_kinfit:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_kinfit"
+  tree.Draw(var,"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   tree.Draw("(muons.pt-muons.GEN_pt)/muons.GEN_pt>>hres_pf","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   
   hres_pf.Draw("HIST")
@@ -117,6 +157,7 @@ def main(sample,cut):
   
   hres_kinfit.Draw("HIST")
   ROOT.gStyle.SetOptStat(1)
+  ROOT.gStyle.SetOptTitle(0)
   stat_res_kinfit = ROOT.TPaveText()
   stat_res_kinfit = hres_kinfit.FindObject("stats")
   stat_res_kinfit.SetY1NDC(.5)
@@ -130,8 +171,14 @@ def main(sample,cut):
   stat_res_kinfit.Draw("same")
   
   canvas.cd()
-  tree.Draw("muPairs.mass>>hmass_pf","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
-  tree.Draw("(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)>>hmass_kinfit","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
+  var=variables_dictionary[variables_selection][0]#"muPairs.mass"
+  var_histo="hmass_blue"
+  cutstring="(muons[1].d0_PV < 0 & muons[1].charge > 0 & muons[0].d0_PV > 0 & muons[0].charge < 0) || (muons[0].d0_PV < 0 & muons[0].charge > 0 & muons[1].d0_PV > 0 & muons[1].charge < 0)"
+  tree.Draw("{0}>>{1}".format(var,var_histo),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
+#  var="(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)>>hmass_kinfit"
+  cutstring="(muons[1].d0_PV > 0 & muons[1].charge > 0 & muons[0].d0_PV < 0 & muons[0].charge < 0) || (muons[0].d0_PV > 0 & muons[0].charge > 0 & muons[1].d0_PV < 0 & muons[1].charge < 0)"
+  var_histo="hmass_red"
+  tree.Draw("{0}>>{1}".format(var,var_histo),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   
   fit_pf = ROOT.TF1("doublegaus_pf","gaus(0)+gaus(3)",120,130)
   fit_kinfit =  ROOT.TF1("doublegaus_kinfit","gaus(0)+gaus(3)",120,130)
@@ -151,9 +198,11 @@ def main(sample,cut):
   
   hmass_pf.Draw()
   ROOT.gStyle.SetOptStat(1)
+  ROOT.gStyle.SetOptTitle(0)
   ROOT.gStyle.SetOptFit(1112)
   stat_pf = ROOT.TPaveText()
   stat_pf = hmass_pf.FindObject("stats")
+  #stat_pf.SetLabel("Bleu")
   stat_pf.SetOptStat(1)
   stat_pf.SetOptFit(1112)
   stat_pf.SetY1NDC(.7)
@@ -168,6 +217,8 @@ def main(sample,cut):
   
   stat_kinfit = ROOT.TPaveText()
   stat_kinfit = hmass_kinfit.FindObject("stats")
+  #stat_kinfit.SetLabel("Red")
+  #stat_kinfit.SetTextSize(0.05)
   stat_kinfit.SetOptStat(1)
   stat_kinfit.SetOptFit(1112)
   stat_kinfit.SetY1NDC(.5)
@@ -189,12 +240,21 @@ def main(sample,cut):
   print("FWHM/Mean PF = {0}".format(fwhm_pf/fit_pf.GetMaximumX()))
   print("FWHM/Mean Regr = {0}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
   
-  textpad = ROOT.TPaveText(.15,.75,.4,.88,"NDC ARC")
-  textpad.AddText("FWMH KinFit/PF ratio = {:.3f}".format(fwhm_kinfit/fwhm_pf))
-  textpad.AddText("FWHM/Mean PF = {:.4f}".format(fwhm_pf/fit_pf.GetMaximumX()))
-  textpad.AddText("FWHM/Mean KinFit = {:.4f}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
+  textpad = ROOT.TPaveText(.13,.85,.5,.90,"NDC ARC")
+  textpad.AddText("Fit mean difference : {:.3f} GeV".format(abs(fit_pf.GetMaximumX() - fit_kinfit.GetMaximumX())))
+#  textpad = ROOT.TPaveText(.15,.75,.4,.88,"NDC ARC") 
+#  textpad.AddText("FWMH KinFit/PF ratio = {:.3f}".format(fwhm_kinfit/fwhm_pf))
+#  textpad.AddText("FWHM/Mean PF = {:.4f}".format(fwhm_pf/fit_pf.GetMaximumX()))
+#  textpad.AddText("FWHM/Mean KinFit = {:.4f}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
+  textpad.SetFillColor(4000)
   textpad.Draw("same")
-  
+
+
+  cmstex = ROOT.TLatex();
+  cmstex.SetTextSize(0.03);
+##  cmstex.DrawLatexNDC(0.11,0.91,"#scale[1.5]{CMS} Private");
+  cmstex.DrawLatexNDC(0.11,0.91,"#font[42]{#bf{CMS} #scale[0.8]{#it{Internal}}}");
+  cmstex.Draw("same");
   
   fit_pf.SetLineColor(ROOT.kBlue)
   fit_pf.Draw("same")
@@ -203,10 +263,16 @@ def main(sample,cut):
   fit_kinfit.Draw("same")
   
   #ROOT.gPad.BuildLegend()
-  
-  
-  canvas.Print("hmass_{0}_{1}.pdf".format(sample_type,post_string))
+  legend = ROOT.TLegend(.13,.78,.45,.85)
+  legend.SetLineColor(0)
+  legend.AddEntry("hmass_red","d0(#mu^{+}) > 0, d0(#mu^{-}) < 0")
+  legend.AddEntry("hmass_blue","d0(#mu^{+}) < 0, d0(#mu^{-}) > 0")
+  legend.Draw("same")
+
+  canvas.Print("{0}_{1}_{2}.pdf".format(variables_selection,sample_type,post_string))
   resolution_canvas.Print("hres_{0}_{1}.pdf".format(sample_type,post_string))
+  canvas.Print("{0}_{1}_{2}.png".format(variables_selection,sample_type,post_string))
+  resolution_canvas.Print("hres_{0}_{1}.png".format(sample_type,post_string))
   
   print(tree.GetEntries())
   
@@ -220,8 +286,9 @@ if __name__ == "__main__":
 
   for samp in args.samps:
     file_name = file_names[samp]
-    for cut in args.cuts:
-      main(samp,cut)
+    for var in args.variables_selection:
+      for cut in args.cuts:
+        main(samp,var,cut)
   sys.exit(0);
 
 
