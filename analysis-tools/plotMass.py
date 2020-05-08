@@ -1,4 +1,4 @@
-import ROOT, sys
+import ROOT, sys, os
 #ROOT.gROOT.SetBatch(True)
 
 # from https://stackoverflow.com/questions/15753701/argparse-option-for-passing-a-list-as-option
@@ -57,7 +57,15 @@ file_names = {
         "vbf18":"h2mu_vbf_125_prod-v18.1.2_hadded",
         "whp18":"h2mu_WplusH_125_prod-v18.1.2_hadded",
         "whm18":"h2mu_WminusH_125_prod-v18.1.2_hadded",
-        "tth18":"h2mu_tth_125_prod-v18.1.2_hadded"
+        "tth18":"h2mu_tth_125_prod-v18.1.2_hadded",
+        #2018 w beamspot refitting covariance
+        "ggh18bs":"tuple_with_beamspot_covariance3d_GluGluHToMuMu_M125_TuneCP5_PSweights_13TeV_amcatnloFXFX_pythia8",
+         #2018 w beamspot refitting rotated covariance
+        "ggh18bsr":"tuple_2_with_beamspot_rotatedcovariance3d_GluGluHToMuMu_M125_TuneCP5_PSweights_13TeV_amcatnloFXFX_pythia8",
+        #2018 w beamspot refitting rotated covariance
+        "ggh18bsr_all":"tuple_with_beamspot_rotatedcovariance3d_GluGluHToMuMu_M125_TuneCP5_PSweights_13TeV_amcatnloFXFX_pythia8",
+        #2018 w beamspot refitting rotated covariance
+        "ggh18bsr_hadded":"tuple_with_beamspot_rotatedcovariance3d_GluGluHToMuMu_M125_TuneCP5_PSweights_13TeV_amcatnloFXFX_pythia8/hadded"
         }
 
 cutstrings = {
@@ -80,7 +88,8 @@ variables_dictionary = {
   "hmass_PF_Roch":["muPairs.mass_Roch","m(#mu#mu) Roch"],
   "hmass_kinfit":["(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)","m(#mu#mu) kinfit"],
   "hmass_kinfit_Roch":["(muPairs.mass_kinfit>0?(muPairs.mass_kinfit*muPairs.mass_Roch/muPairs.mass):muPairs.mass_Roch)","m(#mu#mu) kinfit + Roch"],
-  "hmass_kalman":["muPairs.mass_KaMu","m(#mu#mu) kalman"]
+  "hmass_kalman":["muPairs.mass_KaMu","m(#mu#mu) kalman"],
+  "hmass_bs":["muPairs.mass_bs","m(#mu#mu) bs refit"] 
   }
 
 
@@ -113,9 +122,18 @@ def main(sample,variables_selection,cut):
 
 
   data_path = "/Users/pier/Physics/data/"
-  infile = ROOT.TFile("{0}/{1}.root".format(data_path,file_name))
-  
-  tree = infile.Get("dimuons/tree")
+  if ( os.path.isfile('{0}/{1}.root'.format(data_path,file_name) ) ):
+    infile = ROOT.TFile("{0}/{1}.root".format(data_path,file_name))
+    tree = infile.Get("dimuons/tree")
+  else : 
+    entries = os.listdir('{0}/{1}'.format(data_path,file_name))
+    for entry in entries:
+        print('Adding {0} file to chain.'.format(entry))
+        tree = ROOT.TChain("dimuons/tree")
+        tree.Add('{0}/{1}/{2}'.format(data_path,file_name,entry))
+
+  print(tree.GetEntries())
+
   sample_type = sample
 
   ROOT.gStyle.SetFillStyle(4000) # transparent pads
@@ -129,7 +147,7 @@ def main(sample,variables_selection,cut):
   hmass_kinfit = create_th1("hmass_red","MuPair mass",50, 120, 130,ROOT.kRed,variables_dictionary[variables_selection][1])
   
   hres_pf = create_th1("hres_pf","Muon resolution", 100,-0.2,0.2,ROOT.kBlue,"#Delta(p_{T},p_{T}^{GEN})/p_{T}^{GEN}")
-  hres_kinfit = create_th1("hres_kinfit","Muon resolution", 100,-0.2,0.2,ROOT.kRed,"#Delta(p_{T},p_{T}^{GEN})/p_{T}^{GEN}")
+  hres_red = create_th1("hres_red","Muon resolution", 100,-0.2,0.2,ROOT.kRed,"#Delta(p_{T},p_{T}^{GEN})/p_{T}^{GEN}")
   
   jet_selection = "( Sum$(jets.pt>20 && abs(jets.eta)<2.4 && jets.CSV>0.4941)>=0 ) "
   muon_selection = "(muons.pt > 20 && abs(muons.eta)<2.4 && muons.isMediumID==1 && muons.relIso < 0.25)"
@@ -142,7 +160,8 @@ def main(sample,variables_selection,cut):
   cutstring=cutstrings[post_string]
   
   resolution_canvas.cd()
-  var="( (muons.pt_kinfit>0?muons.pt_kinfit:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_kinfit"
+  #var="( (muons.pt_kinfit>0?muons.pt_kinfit:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_red"
+  var="( (muons.pt_bs>0?muons.pt_bs:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_red"
   tree.Draw(var,"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   tree.Draw("(muons.pt-muons.GEN_pt)/muons.GEN_pt>>hres_pf","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   
@@ -155,28 +174,29 @@ def main(sample,variables_selection,cut):
   stat_res_pf.SetX1NDC(.7)
   stat_res_pf.SetX2NDC(.9)
   
-  hres_kinfit.Draw("HIST")
+  hres_red.Draw("HIST")
   ROOT.gStyle.SetOptStat(1)
   ROOT.gStyle.SetOptTitle(0)
   stat_res_kinfit = ROOT.TPaveText()
-  stat_res_kinfit = hres_kinfit.FindObject("stats")
+  stat_res_kinfit = hres_red.FindObject("stats")
   stat_res_kinfit.SetY1NDC(.5)
   stat_res_kinfit.SetY2NDC(.7)
   stat_res_kinfit.SetX1NDC(.9)
   stat_res_kinfit.SetX2NDC(.7)
   
-  hres_kinfit.Draw("HIST")
+  hres_red.Draw("HIST")
   hres_pf.Draw("HIST same")
   stat_res_pf.Draw("same")
   stat_res_kinfit.Draw("same")
   
   canvas.cd()
-  var=variables_dictionary[variables_selection][0]#"muPairs.mass"
+  var=variables_dictionary['hmass_PF'][0]#"muPairs.mass"
   var_histo="hmass_blue"
-  cutstring="(muons[1].d0_PV < 0 & muons[1].charge > 0 & muons[0].d0_PV > 0 & muons[0].charge < 0) || (muons[0].d0_PV < 0 & muons[0].charge > 0 & muons[1].d0_PV > 0 & muons[1].charge < 0)"
+  #cutstring="(muons[1].d0_PV < 0 & muons[1].charge > 0 & muons[0].d0_PV > 0 & muons[0].charge < 0) || (muons[0].d0_PV < 0 & muons[0].charge > 0 & muons[1].d0_PV > 0 & muons[1].charge < 0)"
   tree.Draw("{0}>>{1}".format(var,var_histo),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
 #  var="(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)>>hmass_kinfit"
-  cutstring="(muons[1].d0_PV > 0 & muons[1].charge > 0 & muons[0].d0_PV < 0 & muons[0].charge < 0) || (muons[0].d0_PV > 0 & muons[0].charge > 0 & muons[1].d0_PV < 0 & muons[1].charge < 0)"
+  #cutstring="(muons[1].d0_PV > 0 & muons[1].charge > 0 & muons[0].d0_PV < 0 & muons[0].charge < 0) || (muons[0].d0_PV > 0 & muons[0].charge > 0 & muons[1].d0_PV < 0 & muons[1].charge < 0)"
+  var=variables_dictionary[variables_selection][0]#"muPairs.mass"
   var_histo="hmass_red"
   tree.Draw("{0}>>{1}".format(var,var_histo),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   
@@ -240,12 +260,12 @@ def main(sample,variables_selection,cut):
   print("FWHM/Mean PF = {0}".format(fwhm_pf/fit_pf.GetMaximumX()))
   print("FWHM/Mean Regr = {0}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
   
-  textpad = ROOT.TPaveText(.13,.85,.5,.90,"NDC ARC")
-  textpad.AddText("Fit mean difference : {:.3f} GeV".format(abs(fit_pf.GetMaximumX() - fit_kinfit.GetMaximumX())))
-#  textpad = ROOT.TPaveText(.15,.75,.4,.88,"NDC ARC") 
-#  textpad.AddText("FWMH KinFit/PF ratio = {:.3f}".format(fwhm_kinfit/fwhm_pf))
-#  textpad.AddText("FWHM/Mean PF = {:.4f}".format(fwhm_pf/fit_pf.GetMaximumX()))
-#  textpad.AddText("FWHM/Mean KinFit = {:.4f}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
+#  textpad = ROOT.TPaveText(.13,.85,.5,.90,"NDC ARC")
+#  textpad.AddText("Fit mean difference : {:.3f} GeV".format(abs(fit_pf.GetMaximumX() - fit_kinfit.GetMaximumX())))
+  textpad = ROOT.TPaveText(.15,.75,.4,.88,"NDC ARC") 
+  textpad.AddText("FWMH BS/PF ratio = {:.3f}".format(fwhm_kinfit/fwhm_pf))
+  textpad.AddText("FWHM/Mean PF = {:.4f}".format(fwhm_pf/fit_pf.GetMaximumX()))
+  textpad.AddText("FWHM/Mean BS = {:.4f}".format(fwhm_kinfit/fit_kinfit.GetMaximumX()))
   textpad.SetFillColor(4000)
   textpad.Draw("same")
 
@@ -265,15 +285,17 @@ def main(sample,variables_selection,cut):
   #ROOT.gPad.BuildLegend()
   legend = ROOT.TLegend(.13,.78,.45,.85)
   legend.SetLineColor(0)
-  legend.AddEntry("hmass_red","d0(#mu^{+}) > 0, d0(#mu^{-}) < 0")
-  legend.AddEntry("hmass_blue","d0(#mu^{+}) < 0, d0(#mu^{-}) > 0")
+  #legend.AddEntry("hmass_red","d0(#mu^{+}) > 0, d0(#mu^{-}) < 0")
+  #legend.AddEntry("hmass_blue","d0(#mu^{+}) < 0, d0(#mu^{-}) > 0")
   legend.Draw("same")
 
   canvas.Print("{0}_{1}_{2}.pdf".format(variables_selection,sample_type,post_string))
   resolution_canvas.Print("hres_{0}_{1}.pdf".format(sample_type,post_string))
   canvas.Print("{0}_{1}_{2}.png".format(variables_selection,sample_type,post_string))
   resolution_canvas.Print("hres_{0}_{1}.png".format(sample_type,post_string))
-  
+  canvas.Print("{0}_{1}_{2}.root".format(variables_selection,sample_type,post_string))
+  resolution_canvas.Print("hres_{0}_{1}.root".format(sample_type,post_string))
+   
   print(tree.GetEntries())
   
 
