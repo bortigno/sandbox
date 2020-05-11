@@ -22,6 +22,22 @@ args = parser.parse_args()
 ## some functions ##
 ####################
 
+
+def get_tree(file_name, data_path="/Users/pier/Physics/data/", path_to_tree="dimuons/tree"):
+  if ( os.path.isfile('{0}/{1}.root'.format(data_path,file_name) ) ):
+    infile = ROOT.TFile("{0}/{1}.root".format(data_path,file_name))
+    tree = infile.Get("dimuons/tree")
+  else : 
+    entries = os.listdir('{0}/{1}'.format(data_path,file_name))
+    for entry in entries:
+        print('Adding {0} file to chain.'.format(entry))
+        tree = ROOT.TChain(path_to_tree)
+        tree.Add('{0}/{1}/{2}'.format(data_path,file_name,entry))
+  print(tree.GetEntries())
+  return tree
+
+
+
 def create_th1(name,title,nbins,minbin,maxbin,linecolor,xaxistitle="",yaxistitle="Entries"):
   h = ROOT.TH1F(name,title,nbins, minbin, maxbin)
   h.SetLineColor(linecolor)
@@ -89,7 +105,8 @@ variables_dictionary = {
   "hmass_kinfit":["(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)","m(#mu#mu) kinfit"],
   "hmass_kinfit_Roch":["(muPairs.mass_kinfit>0?(muPairs.mass_kinfit*muPairs.mass_Roch/muPairs.mass):muPairs.mass_Roch)","m(#mu#mu) kinfit + Roch"],
   "hmass_kalman":["muPairs.mass_KaMu","m(#mu#mu) kalman"],
-  "hmass_bs":["muPairs.mass_bs","m(#mu#mu) bs refit"] 
+  "hmass_bs":["muPairs.mass_bs","m(#mu#mu) bs refit"],
+  "hmass_geofit":["GeoFit::mass(muons[0].eta, muons[0].phi,GeoFit::PtCorrGeoFit(muons[0].d0_BS*muons[0].charge, muons[0].pt_Roch, muons[0].eta, 2018),muons[1].eta, muons[1].phi,GeoFit::PtCorrGeoFit(muons[1].d0_BS*muons[1].charge, muons[1].pt_Roch, muons[1].eta, 2018) )","m(#mu#mu) geoFit"]
   }
 
 
@@ -120,20 +137,9 @@ def main(sample,variables_selection,cut):
 
   '''
 
+  ROOT.gROOT.LoadMacro("GeoFitCorr_C.so")
 
-  data_path = "/Users/pier/Physics/data/"
-  if ( os.path.isfile('{0}/{1}.root'.format(data_path,file_name) ) ):
-    infile = ROOT.TFile("{0}/{1}.root".format(data_path,file_name))
-    tree = infile.Get("dimuons/tree")
-  else : 
-    entries = os.listdir('{0}/{1}'.format(data_path,file_name))
-    for entry in entries:
-        print('Adding {0} file to chain.'.format(entry))
-        tree = ROOT.TChain("dimuons/tree")
-        tree.Add('{0}/{1}/{2}'.format(data_path,file_name,entry))
-
-  print(tree.GetEntries())
-
+  tree = get_tree(file_name)
   sample_type = sample
 
   ROOT.gStyle.SetFillStyle(4000) # transparent pads
@@ -160,10 +166,12 @@ def main(sample,variables_selection,cut):
   cutstring=cutstrings[post_string]
   
   resolution_canvas.cd()
+  reference_var = "(muons.pt-muons.GEN_pt)/muons.GEN_pt"
+  #reference_var = "( GeoFit::PtCorrGeoFit(muons.d0_BS*muons.charge, muons.pt_Roch, muons.eta, 2018)-muons.GEN_pt)/muons.GEN_pt"
   #var="( (muons.pt_kinfit>0?muons.pt_kinfit:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_red"
   var="( (muons.pt_bs>0?muons.pt_bs:muons.pt) -muons.GEN_pt)/muons.GEN_pt>>hres_red"
   tree.Draw(var,"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
-  tree.Draw("(muons.pt-muons.GEN_pt)/muons.GEN_pt>>hres_pf","{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
+  tree.Draw("{0}>>hres_pf".format(reference_var),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
   
   hres_pf.Draw("HIST")
   ROOT.gStyle.SetOptStat(1)
@@ -191,6 +199,7 @@ def main(sample,variables_selection,cut):
   
   canvas.cd()
   var=variables_dictionary['hmass_PF'][0]#"muPairs.mass"
+  #var=variables_dictionary['hmass_geofit'][0]
   var_histo="hmass_blue"
   #cutstring="(muons[1].d0_PV < 0 & muons[1].charge > 0 & muons[0].d0_PV > 0 & muons[0].charge < 0) || (muons[0].d0_PV < 0 & muons[0].charge > 0 & muons[1].d0_PV > 0 & muons[1].charge < 0)"
   tree.Draw("{0}>>{1}".format(var,var_histo),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection, cutstring) )
@@ -282,9 +291,12 @@ def main(sample,variables_selection,cut):
   fit_kinfit.SetLineColor(ROOT.kRed)
   fit_kinfit.Draw("same")
   
-  #ROOT.gPad.BuildLegend()
-  legend = ROOT.TLegend(.13,.78,.45,.85)
+  #ROOT.gPad.BuildLegend() 
+  legend = ROOT.TLegend(.13,.63,.45,.70) # (.13,.78,.45,.85)
   legend.SetLineColor(0)
+  legend.AddEntry("hmass_red","BS refit")
+  legend.AddEntry("hmass_blue","PF")
+  #legend.AddEntry("hmass_blue","GeoFit")
   #legend.AddEntry("hmass_red","d0(#mu^{+}) > 0, d0(#mu^{-}) < 0")
   #legend.AddEntry("hmass_blue","d0(#mu^{+}) < 0, d0(#mu^{-}) > 0")
   legend.Draw("same")
