@@ -1,34 +1,44 @@
 import ROOT
+from plotMass import file_names, get_tree 
 
-infile = ROOT.TFile("GluGlu_HToMuMu_M125_GEN_test.root","READ")
+#infile = ROOT.TFile("GluGlu_HToMuMu_M125_GEN_test.root","READ")
 #infile = ROOT.TFile("/eos/cms/store/group/phys_higgs/HiggsExo/H2Mu/UF/ntuples/data_2017_and_mc_fall17/VBFHToMuMu_M125_13TeV_amcatnlo_pythia8/H2Mu_VBF/181003_121220/tuple_all.root","READ")
+#tree = infile.Get("dimuons/tree")
 
-tree = infile.Get("dimuons/tree")
+samp = "ggh18bsr_hadded" 
+file_name = file_names[samp] 
+tree = get_tree(file_name)
 
-#variable = "massRes"
-variable = "ptRes"
+variable = "massRes"
+#variable = "ptRes"
 
 #positive muons
 
 #mass viariables
 #variable_kinfit_string = "(muPairs.mass_kinfit - 125.):muons.d0_PV"
-#variable_pf_string = "(muPairs.mass - 125.):muons.d0_PV"
+variable_kinfit_string = "(muPairs.mass_bs - 125.):muons.d0_PV"
+variable_pf_string = "(muPairs.mass - 125.):muons.d0_PV"
 
 #pt variable
-variable_kinfit_string = "(muons.pt_kinfit - muons.GEN_pt):muons.d0_PV" 
-variable_pf_string = "(muons.pt - muons.GEN_pt):muons.d0_PV" 
+#variable_kinfit_string = "(muons.pt_kinfit - muons.GEN_pt):muons.d0_PV" 
+#variable_kinfit_string = "(muons.pt_bs - muons.GEN_pt):muons.d0_PV" 
+#variable_pf_string = "(muons.pt - muons.GEN_pt):muons.d0_PV" 
 
-muon_selection = "(muons.pt > 20 && abs(muons.eta)<2.4 && muons.isMediumID==1 && muons.relIso < 0.25)"
-event_selection = "(muons.pt>30 && ( muons[0].isHltMatched[2]==1 || muons[0].isHltMatched[3]==1 || muons[1].isHltMatched[2]==1 || muons[1].isHltMatched[3]==1 ) )"
+muon_selection = "(muons.pt > 20 & abs(muons.eta)<2.4 & muons.isMediumID==1 & muons.relIso < 0.25)"
+event_selection = "muons.pt>20" # dummy
+#event_selection = "(muons.pt>30 && ( muons[0].isHltMatched[2]==1 || muons[0].isHltMatched[3]==1 || muons[1].isHltMatched[2]==1 || muons[1].isHltMatched[3]==1 ) )"
 weightstring = "(GEN_wgt * PU_wgt)"
 
-cut_string = "muons.charge>0 & abs(muons.pt_kinfit - muons.GEN_pt)<20"
+#cut_string = "muons.charge>0 & abs(muons.pt_kinfit - muons.GEN_pt)<20"
+cut_string = "muons.charge>0 & abs(muons.pt_bs - muons.GEN_pt)<20"
 
 c1 = ROOT.TCanvas("c1","c1",900,600)
 kfgend0pos = ROOT.TH2F("kf{0}gend0pos".format(variable),"kf{0}gend0pos".format(variable),20,-0.005,0.005,20,-5,5)
 pfgend0pos = ROOT.TH2F("pf{0}gend0pos".format(variable),"pf{0}gend0pos".format(variable),20,-0.005,0.005,20,-5,5)
-tree.Draw("{0}>>kf{1}gend0pos".format(variable_kinfit_string,variable),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection,cut_string),"goff")
-tree.Draw("{0}>>pf{1}gend0pos".format(variable_pf_string,variable),"{0} * ({1} && {2} && {3})".format(weightstring,event_selection,muon_selection,cut_string),"goff")
+
+tree.Draw("{0}>>kf{1}gend0pos".format(variable_kinfit_string,variable),"{0} * ({1} & {2} & {3})".format(weightstring,event_selection,muon_selection,cut_string),"goff")
+tree.Draw("{0}>>pf{1}gend0pos".format(variable_pf_string,variable),"{0} * ({1} & {2} & {3})".format(weightstring,event_selection,muon_selection,cut_string),"goff")
+
 kfgend0pos_pfx = kfgend0pos.ProfileX("kf{0}gend0pos_pfx".format(variable))
 pfgend0pos_pfx = pfgend0pos.ProfileX("pf{0}gend0pos_pfx".format(variable))
 kfgend0pos_pfx.SetLineColor(ROOT.kRed)
