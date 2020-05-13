@@ -105,7 +105,7 @@ variables_dictionary = {
   "hmass_kinfit":["(muPairs.mass_kinfit>0?muPairs.mass_kinfit:muPairs.mass)","m(#mu#mu) kinfit"],
   "hmass_kinfit_Roch":["(muPairs.mass_kinfit>0?(muPairs.mass_kinfit*muPairs.mass_Roch/muPairs.mass):muPairs.mass_Roch)","m(#mu#mu) kinfit + Roch"],
   "hmass_kalman":["muPairs.mass_KaMu","m(#mu#mu) kalman"],
-  "hmass_bs":["muPairs.mass_bs","m(#mu#mu) bs refit"],
+  "hmass_bs":["(muPairs.mass_bs>0?muPairs.mass_bs:muPairs.mass)","m(#mu#mu) bs refit"],
   "hmass_geofit":["GeoFit::mass(muons[0].eta, muons[0].phi,GeoFit::PtCorrGeoFit(muons[0].d0_BS*muons[0].charge, muons[0].pt_Roch, muons[0].eta, 2018),muons[1].eta, muons[1].phi,GeoFit::PtCorrGeoFit(muons[1].d0_BS*muons[1].charge, muons[1].pt_Roch, muons[1].eta, 2018) )","m(#mu#mu) geoFit"]
   }
 
